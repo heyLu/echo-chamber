@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"net/http"
 	"os"
 	"strconv"
@@ -12,6 +13,7 @@ import (
 )
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
 
 	responseTime := prometheus.NewHistogramVec(prometheus.HistogramOpts{
 		Namespace: "echo_chamber",
@@ -24,6 +26,7 @@ func main() {
 
 	http.HandleFunc("/echo", requestMetrics(responseTime, requestLog(handleEcho)))
 	http.HandleFunc("/404", requestMetrics(responseTime, requestLog(handleNotFound)))
+	http.HandleFunc("/latency", requestMetrics(responseTime, requestLog(handleLatency)))
 
 	http.Handle("/_metrics", promhttp.Handler())
 
@@ -45,6 +48,12 @@ func handleEcho(w http.ResponseWriter, req *http.Request) {
 func handleNotFound(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
 	w.Write([]byte("404"))
+}
+
+func handleLatency(w http.ResponseWriter, req *http.Request) {
+	start := time.Now()
+	time.Sleep(time.Duration(rand.Intn(200)) * time.Millisecond)
+	fmt.Fprintf(w, "took %s", time.Since(start))
 }
 
 type Handler func(w http.ResponseWriter, req *http.Request)
