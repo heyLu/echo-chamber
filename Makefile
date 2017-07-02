@@ -4,10 +4,12 @@ SRC_IN_GOPATH=$(GOPATH)/src/github.com/heyLu/echo-chamber
 build: echo-chamber load
 
 echo-chamber: setup echo-chamber.go
-	cd $(SRC_IN_GOPATH) && go build github.com/heyLu/echo-chamber
+	cd $(SRC_IN_GOPATH) && go install github.com/heyLu/echo-chamber
+	@cp $(GOPATH)/bin/$@ $(PWD)
 
 load: setup cmd/load/load.go
-	cd $(SRC_IN_GOPATH) && go build github.com/heyLu/echo-chamber/cmd/load
+	cd $(SRC_IN_GOPATH) && go install github.com/heyLu/echo-chamber/cmd/load
+	@cp $(GOPATH)/bin/$@ $(PWD)
 
 setup: $(SRC_IN_GOPATH)
 
