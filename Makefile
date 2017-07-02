@@ -14,3 +14,6 @@ setup: $(SRC_IN_GOPATH)
 $(SRC_IN_GOPATH):
 	mkdir -p $$(dirname $@)
 	ln -s $(PWD) $@
+
+clean:
+	rm -f echo-chamber load
