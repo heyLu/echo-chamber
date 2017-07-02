@@ -44,6 +44,7 @@ func handleEcho(w http.ResponseWriter, req *http.Request) {
 
 func handleNotFound(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
+	w.Write([]byte("404"))
 }
 
 type Handler func(w http.ResponseWriter, req *http.Request)
