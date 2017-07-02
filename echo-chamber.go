@@ -4,12 +4,28 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
-	http.HandleFunc("/echo", requestLog(handleEcho))
-	http.HandleFunc("/404", requestLog(handleNotFound))
+
+	responseTime := prometheus.NewHistogramVec(prometheus.HistogramOpts{
+		Namespace: "echo_chamber",
+		Name:      "response_time_seconds",
+
+		Help: "Measures the HTTP response time of handlers",
+	},
+		[]string{"method", "status", "path"})
+	prometheus.MustRegister(responseTime)
+
+	http.HandleFunc("/echo", requestMetrics(responseTime, requestLog(handleEcho)))
+	http.HandleFunc("/404", requestMetrics(responseTime, requestLog(handleNotFound)))
+
+	http.Handle("/_metrics", promhttp.Handler())
 
 	addr := "localhost:12345"
 	fmt.Printf("Listening on http://%s\n", addr)
@@ -31,6 +47,20 @@ func handleNotFound(w http.ResponseWriter, req *http.Request) {
 }
 
 type Handler func(w http.ResponseWriter, req *http.Request)
+
+func requestMetrics(responseTime *prometheus.HistogramVec, handler Handler) Handler {
+	return func(w http.ResponseWriter, req *http.Request) {
+		start := time.Now()
+		rw := newRecordWriter(w)
+		handler(rw, req)
+
+		responseTime.With(prometheus.Labels{
+			"method": req.Method,
+			"status": strconv.Itoa(rw.StatusCode),
+			"path":   req.URL.Path}).
+			Observe(time.Since(start).Seconds())
+	}
+}
 
 type recordWriter struct {
 	http.ResponseWriter
