@@ -1,2 +1,5 @@
 /vendor
 /.go
+
+/echo-chamber
+/load
