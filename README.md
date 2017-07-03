@@ -25,12 +25,12 @@ $ go run cmd/load/load.go -url http://localhost:8080/latency -per-second 50 -ver
 Run `make build && ./echo-chamber`.  This starts the HTTP server on
 <http://localhost:12345>.
 
-If you want, you can run a [prometheus](https://prometheus.io) instance,
+If you want, you can run a [Prometheus](https://prometheus.io) instance,
 and configure it to fetch metrics from
 <http://localhost:12345/_metrics>.
 
 And if you want to be even fancier, use
-[grafana](https://github.com/grafana/grafana) to get a fancy dashboard.
+[Grafana](https://github.com/grafana/grafana) to get a fancy dashboard.
 
 ![Screenshot of Dashboard in Grafana](./fancy-dashboard.png)
 
