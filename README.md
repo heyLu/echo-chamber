@@ -31,3 +31,8 @@ and configure it to fetch metrics from
 
 And if you want to be even fancier, use
 [grafana](https://github.com/grafana/grafana) to get a fancy dashboard.
+
+![Screenshot of Dashboard in Grafana](./fancy-dashboard.png)
+
+(The definition for that dashboard is available as
+[./fancy-dashboard.json](./fancy-dashboard.json).)
